@@ -63,3 +63,24 @@ SchemeOf() {
   echo $1 \
     | sed -E -e 's/^([^:]*):.*$/\1/'
 }
+
+# これは考え直したほうがいいかもしれない
+# HTML の中にあるリンクを重複なく列挙したファイル名を返す
+# LinkList(URI)
+LinkList() {
+  if [ $# -eq 1 ]; then
+    if [ "$(MIMETypeOf $1)" = "text/html" ]; then
+      tmpfile=$(mktemp)
+
+      echo "# $1" > $tmpfile
+      $GETTER $1 \
+        | sed -En -e 's/^.*href="([^"]+)".*$/\1/p' \
+                  -e 's/^.*src="([^"]+)".*$/\1/p' \
+        | sort \
+        | uniq \
+        >> $tmpfile
+
+      echo $tmpfile
+    fi
+  fi
+}
