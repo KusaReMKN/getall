@@ -49,3 +49,10 @@ DirURI() {
 ParentDirURI() {
   echo "$(DirURI $(DirURI $1 | sed -E -e 's#/$##'))"
 }
+
+# 完全修飾 URL からその Root ディレクトリを指す URL を返す
+# RootDirURI([URI])
+RootDirURI() {
+  echo $1 \
+    | sed -E -e 's#^(https?://[^/]*/).*$#\1#'
+}
