@@ -43,3 +43,9 @@ BaseURI() {
 DirURI() {
   echo "$(echo $1 | sed -E -e 's#([^/])/[^/]*$#\1#')/"
 }
+
+# 完全修飾 URL からその親ディレクトリを指す URL を返す
+# ParentDirURI([URI])
+ParentDirURI() {
+  echo "$(DirURI $(DirURI $1 | sed -E -e 's#/$##'))"
+}
