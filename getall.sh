@@ -24,3 +24,16 @@ AutoIndex() {
   echo $1 \
     | sed -E -e 's#(.*)/$#\1/index.html#'
 }
+
+# ベース URL を返す
+# BaseURI(File, [Default])
+BaseURI() {
+  if [ -f "$1" ]; then
+    base=$(sed -Ene 's/.*<base.*href="([^"]+)".*>.*/\1/pi' "$1")
+    if [ -n "$base" ]; then
+      echo $base
+    else
+      echo $2
+    fi
+  fi
+}
