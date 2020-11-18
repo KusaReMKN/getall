@@ -37,3 +37,9 @@ BaseURI() {
     fi
   fi
 }
+
+# 完全修飾 URL からファイル名部分を取り去ったディレクトリを返す
+# DirURI([URI])
+DirURI() {
+  echo "$(echo $1 | sed -E -e 's#([^/])/[^/]*$#\1#')/"
+}
