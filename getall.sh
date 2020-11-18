@@ -56,3 +56,10 @@ RootDirURI() {
   echo $1 \
     | sed -E -e 's#^(https?://[^/]*/).*$#\1#'
 }
+
+# 完全修飾 URL のスキームを返す
+# SchemeOf([URI])
+SchemeOf() {
+  echo $1 \
+    | sed -E -e 's/^([^:]*):.*$/\1/'
+}
