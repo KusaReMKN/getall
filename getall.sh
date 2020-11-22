@@ -30,7 +30,7 @@ AutoIndex() {
 # BaseURI(File, [Default])
 BaseURI() {
   if [ -f "$1" ]; then
-    base=$(sed -Ene 's/.*<base.*href="([^"]+)".*>.*/\1/pi' "$1")
+    base=$(sed -Ene 's/.*<base.*href="([^"]+)".*>.*/\1/pi' "$1" | tac)
     if [ -n "$base" ]; then
       echo $base
     else
