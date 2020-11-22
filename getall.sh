@@ -65,6 +65,19 @@ SchemeOf() {
     | sed -E -e 's/^([^:]*):.*$/\1/'
 }
 
+# 基底 URL と部分 URL から完全修飾 URL を返す
+# FullURI(BaseURI, PartURI)
+FullURI() {
+  case "$2" in
+    *:*) echo "$2" ;;
+    //*) echo "$(SchemeOf "$1"):$2" ;;
+     /*) echo "$(FullURI "$(RootDirURI "$1")" "$(echo "$2" | cut -c 2-)")" ;;
+    ./*) echo "$(FullURI "$(DirURI "$1")" "$(echo "$2" | cut -c 3-)")" ;;
+   ../*) echo "$(FullURI "$(ParentDirURI "$1")" "$(echo "$2" | cut -c 4-)")" ;;
+      *) echo "$(DirURI "$1")$2" ;;
+  esac
+}
+
 # これは考え直したほうがいいかもしれない
 # HTML の中にあるリンクを重複なく列挙したファイル名を返す
 # LinkList(URI)
