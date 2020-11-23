@@ -78,6 +78,13 @@ FullURI() {
   esac
 }
 
+# 完全修飾 URL からホストとディレクトリ部分のみを取り出す
+# HostAndDir(URI)
+HostAndDir() {
+  [ -n "$1" ] \
+    && echo $(DirURI "$(echo "$1" | sed -E -e 's#.*://(.*)#\1#')")
+}
+
 # これは考え直したほうがいいかもしれない
 # HTML の中にあるリンクを重複なく列挙したファイル名を返す
 # LinkList(URI)
