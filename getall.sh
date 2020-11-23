@@ -78,11 +78,11 @@ FullURI() {
   esac
 }
 
-# 完全修飾 URL からホストとディレクトリ部分のみを取り出す
-# HostAndDir(URI)
-HostAndDir() {
+# 完全修飾 URL スキーム名を取り払ったものを返す
+# RemoveScheme(URI)
+RemoveScheme() {
   [ -n "$1" ] \
-    && echo "$(DirURI "$(echo "$1" | sed -E -e 's#.*://(.*)#\1#')")"
+    && echo "$(echo "$1" | sed -E -e 's#.*://(.*)#\1#')"
 }
 
 # これは考え直したほうがいいかもしれない
