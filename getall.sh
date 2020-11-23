@@ -85,6 +85,18 @@ RemoveScheme() {
     && echo "$(echo "$1" | sed -E -e 's#.*://(.*)#\1#')"
 }
 
+# http から始まる URI のコンテンツを取得して適当なディレクトリに保存する
+# GetContent(URI)
+GetContent() {
+  if ! expr "$1" : 'https\?://' > /dev/null; then
+    return 1
+  fi
+  fdir=$(RemoveScheme "$(DirURI "$1")")
+  fname=$(RemoveScheme "$1")
+  mkdir -p "$fdir"
+  $GETTER "$1" > "$fname"
+}
+
 # これは考え直したほうがいいかもしれない
 # HTML の中にあるリンクを重複なく列挙したファイル名を返す
 # LinkList(URI)
