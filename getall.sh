@@ -111,6 +111,21 @@ GetLinkList() {
     >> "$2"
 }
 
+# LinkList の URL を解決する
+# ResolveLinkList(SourceListFile, ContentURI, TargetListFile)
+ResolveLinkList() {
+  if [ $# -ne 3 ]; then
+    return 1
+  fi
+  if [ ! -f "$1" ]; then
+    return 1
+  fi
+  base=$(BaseURI "$1" "$2")
+  while read line; do
+    echo "$(FullURI "$base" "$line")" >> "$3"
+  done < "$1"
+}
+
 # これは考え直したほうがいいかもしれない
 # HTML の中にあるリンクを重複なく列挙したファイル名を返す
 # LinkList(URI)
