@@ -97,6 +97,20 @@ GetContent() {
   $GETTER "$1" > "$fname"
 }
 
+# HTML ファイルの中からリンクを抽出する
+# GetLinkList(HTMLFile, ListFile)
+GetLinkList() {
+  if [ $# -ne 2 ]; then
+    return 1
+  fi
+  sed -En -e 's/^.*href\s*=\s*"([^"]+)".*$/\1/pi' \
+          -e 's/^.*src\s*=\s*"([^"]+)".*$/\1/pi' \
+      "$1" \
+    | sort \
+    | uniq \
+    >> "$2"
+}
+
 # これは考え直したほうがいいかもしれない
 # HTML の中にあるリンクを重複なく列挙したファイル名を返す
 # LinkList(URI)
