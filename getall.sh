@@ -8,7 +8,7 @@ HEADER=HEAD
 ContentTypeOf() {
   [ $# -eq 1 ] \
     && $HEADER "$1" \
-    | sed -Ene 's/^[Cc]ontent-[Tt]ype:\s*(.*).*$/\1/p' \
+    | sed -Ene 's/^content-type:\s*(.*).*$/\1/pi' \
     | tac
 }
 
