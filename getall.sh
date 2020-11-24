@@ -92,7 +92,7 @@ GetContent() {
     return 1
   fi
   fdir=$(RemoveScheme "$(DirURI "$1")")
-  fname=$(RemoveScheme "$1")
+  fname=$(RemoveScheme "$(AutoIndex "$1")")
   mkdir -p "$fdir"
   $GETTER "$1" > "$fname"
 }
