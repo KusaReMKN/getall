@@ -147,6 +147,36 @@ IsSameOrigin() {
   [ "$origin1" = "$origin2" ]
 }
 
+# 試験用
+# 1 世代先まで落としてくる
+# GetOne(URI, [Path])
+GetOne() {
+  prevcd=$(pwd)
+  [ -n "$2" ] && cd "$2"
+  echo -n "Requesting ($1) ... "
+  gotfile=$(GetContent "$1")
+  if [ "$(echo $?)" -ne 0 ]; then
+    cd "$prevcd"
+    exit 1
+  fi
+  echo "Done."
+  rellist=$(mktemp)
+  GetLinkList "$gotfile" "$rellist"
+  abslist=$(mktemp)
+  ResolveLinkList "$rellist" "$1" "$abslist"
+  rm -f "$rellist"
+  echo "$(cat "$abslist" | wc -l) links found."
+  while read line; do
+    if IsSameOrigin "$1" "$line"; then
+      GetContent "$line"
+    else
+      echo -e "\033[31mIgnore ($line)\033[00m"
+    fi
+  done < "$abslist"
+  rm -f "$abslist"
+  cd "$prevcd"
+}
+
 # これは考え直したほうがいいかもしれない
 # HTML の中にあるリンクを重複なく列挙したファイル名を返す
 # LinkList(URI)
