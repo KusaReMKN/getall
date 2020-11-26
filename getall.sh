@@ -95,6 +95,7 @@ GetContent() {
   fname=$(RemoveScheme "$(AutoIndex "$1")")
   mkdir -p "$fdir"
   $GETTER "$1" > "$fname"
+  [ -e "$fname" ] && echo "$fname"
 }
 
 # HTML ファイルの中からリンクを抽出する
