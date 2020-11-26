@@ -127,6 +127,14 @@ ResolveLinkList() {
   done < "$1"
 }
 
+# オリジンのチェック (超簡易)
+# IsSameOrigin(URI1, URI2)
+IsSameOrigin() {
+  origin1=$(echo "$1" | sed -E -e 's#(https?://[^/]*)/.*$#\1#')
+  origin2=$(echo "$2" | sed -E -e 's#(https?://[^/]*)/.*$#\1#')
+  [ "$origin1" = "$origin2" ]
+}
+
 # これは考え直したほうがいいかもしれない
 # HTML の中にあるリンクを重複なく列挙したファイル名を返す
 # LinkList(URI)
