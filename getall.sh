@@ -103,8 +103,8 @@ GetContent() {
   if ! expr "$1" : 'https\?://' > /dev/null; then
     return 1
   fi
-  fdir=$(RemoveScheme "$(DirURI "$1")")
-  fname=$(RemoveScheme "$(AutoIndex "$1")")
+  fdir=$(SaveDirName "$1")
+  fname=$(SaveFileName "$1")
   mkdir -p "$fdir"
   $GETTER "$1" > "$fname"
   [ -e "$fname" ] && echo "$fname"
