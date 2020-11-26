@@ -85,6 +85,12 @@ RemoveScheme() {
     && echo "$(echo "$1" | sed -E -e 's#.*://(.*)#\1#')"
 }
 
+# http から始まる URI のコンテンツを保存するための適当な名前を返す
+# SaveFileName(URI)
+SaveFileName() {
+  echo "$(RemoveScheme "$(AutoIndex "$1")")"
+}
+
 # http から始まる URI のコンテンツを取得して適当なディレクトリに保存する
 # GetContent(URI)
 GetContent() {
