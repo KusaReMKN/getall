@@ -91,6 +91,12 @@ SaveFileName() {
   echo "$(RemoveScheme "$(AutoIndex "$1")")"
 }
 
+# http から始まる URI のコンテンツを保存するための適当なディレクトリ名を返す
+# SaveDirName(URI)
+SaveDirName() {
+  echo "$(RemoveScheme "$(DirURI "$1")")"
+}
+
 # http から始まる URI のコンテンツを取得して適当なディレクトリに保存する
 # GetContent(URI)
 GetContent() {
