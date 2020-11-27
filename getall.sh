@@ -160,6 +160,11 @@ GetOne() {
     return 1
   fi
   echo "Done."
+  if [ "$(MIMETypeOf "$1")" != "text/html" ]; then
+    echo "$1 is not HTML document."
+    echo "Stop."
+    return 1
+  fi
   rellist=$(mktemp)
   GetLinkList "$gotfile" "$rellist"
   abslist=$(mktemp)
