@@ -69,7 +69,7 @@ SchemeOf() {
 # FullURI(BaseURI, PartURI)
 FullURI() {
   case "$2" in
-    *:*) echo "$2" ;;
+  *://*) echo "$2" ;;
     //*) echo "$(SchemeOf "$1"):$2" ;;
      /*) echo "$(FullURI "$(RootDirURI "$1")" "$(echo "$2" | cut -c 2-)")" ;;
     ./*) echo "$(FullURI "$(DirURI "$1")" "$(echo "$2" | cut -c 3-)")" ;;
