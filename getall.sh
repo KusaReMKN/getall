@@ -157,7 +157,7 @@ GetOne() {
   gotfile=$(GetContent "$1")
   if [ "$(echo $?)" -ne 0 ]; then
     cd "$prevcd"
-    exit 1
+    return 1
   fi
   echo "Done."
   rellist=$(mktemp)
