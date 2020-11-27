@@ -116,7 +116,7 @@ GetLinkList() {
   if [ $# -ne 2 ]; then
     return 1
   fi
-  sed -En -e 's/^.*href\s*=\s*"([^"]+)".*$/\1/pi' \
+  sed -En -e 's/^.*href\s*=\s*"([^#"]*)#?.*".*$/\1/pi' \
           -e 's/^.*src\s*=\s*"([^"]+)".*$/\1/pi' \
       "$1" \
     | sort \
