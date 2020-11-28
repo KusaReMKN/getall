@@ -147,41 +147,6 @@ IsSameOrigin() {
   [ "$origin1" = "$origin2" ]
 }
 
-# 試験用
-# 1 世代先まで落としてくる
-# GetOne(URI, [Path])
-GetOne() {
-  prevcd=$(pwd)
-  [ -n "$2" ] && cd "$2"
-  echo -n "Requesting ($1) ... "
-  gotfile=$(GetContent "$1")
-  if [ "$(echo $?)" -ne 0 ]; then
-    cd "$prevcd"
-    return 1
-  fi
-  echo "Done."
-  if [ "$(MIMETypeOf "$1")" != "text/html" ]; then
-    echo "$1 is not HTML document."
-    echo "Stop."
-    return 1
-  fi
-  rellist=$(mktemp)
-  GetLinkList "$gotfile" "$rellist"
-  abslist=$(mktemp)
-  ResolveLinkList "$rellist" "$1" "$abslist"
-  rm -f "$rellist"
-  echo "$(cat "$abslist" | wc -l) links found."
-  while read line; do
-    if IsSameOrigin "$1" "$line"; then
-      GetContent "$line"
-    else
-      echo -e "\033[31mIgnore ($line)\033[00m"
-    fi
-  done < "$abslist"
-  rm -f "$abslist"
-  cd "$prevcd"
-}
-
 EscapePercent() {
   echo $1 | sed -e 's/%/%%/g'
 }
