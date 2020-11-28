@@ -182,6 +182,72 @@ GetOne() {
   cd "$prevcd"
 }
 
+EscapePercent() {
+  echo $1 | sed -e 's/%/%%/g'
+}
+
+NestIncrease() {
+  if [ -z "$nestcount" ]; then
+    export nestcount=0
+    export gotlist=$(mktemp)
+  else
+    export nestcount=$(expr "$nestcount" + 1)
+  fi
+}
+
+NestDecrease() {
+  if [ "$nestcount" -eq 0 ]; then
+    unset nestcount
+    rm -f "$gotlist"
+  else
+    export nestcount=$(expr "$nestcount" - 1)
+  fi
+}
+
+# 本編
+# GetAll(URI, [Path])
+GetAll() {
+  prevcd=$(pwd)
+  NestIncrease
+  [ -n "$2" ] && cd "$2"
+  printf "REQUEST\t$(EscapePercent "$1") ... "
+  gotfile=$(GetContent "$1")
+  if [ "$(echo $?)" -ne 0 ]; then
+    echo "$(tput setaf 1)Error.$(tput sgr0)"
+    cd "$prevcd"
+    NestDecrease
+    return 0
+  fi
+  echo "$1" >> "$gotlist"
+  printf "Done.  "
+  if [ "$(MIMETypeOf "$1")" != "text/html" ]; then
+    echo "Not HTML.  Skip."
+    cd "$prevcd"
+    NestDecrease
+    return 0
+  fi
+  rellist=$(mktemp)
+  GetLinkList "$gotfile" "$rellist"
+  abslist=$(mktemp)
+  ResolveLinkList "$rellist" "$1" "$abslist"
+  rm -f "$rellist"
+  printf "$(cat "$abslist" | wc -l) links found.\n"
+  while read line; do
+    if grep -q "^$line$" "$gotlist"; then
+      printf "$(tput setaf 2)ALREADY\t$(EscapePercent "$line")$(tput sgr0)\n"
+      continue
+    fi
+    if IsSameOrigin "$1" "$line"; then
+      "$0" "$line"
+    else
+      printf "$(tput setaf 1)IGNORE\t$(EscapePercent "$line")$(tput sgr0)\n"
+    fi
+  done < "$abslist"
+  rm -f "$abslist"
+  cd "$prevcd"
+  NestDecrease
+}
+
 # これは考え直したほうがいいかもしれない
 # HTML の中にあるリンクを重複なく列挙したファイル名を返す
 # LinkList(URI)
@@ -202,3 +268,5 @@ LinkList() {
     fi
   fi
 }
+
+GetAll "$1" "$2"
