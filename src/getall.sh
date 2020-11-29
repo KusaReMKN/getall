@@ -250,4 +250,16 @@ while [ "$1" ]; do
   shift
 done
 
+if [ -z "$1" ]; then
+  echo "$(tput setaf 1)ERROR: No URI specified.$(tput sgr0)" >&2
+  echo "Try $(tput bold)getall -h$(tput sgr0) for more information." >&2
+  exit 1
+fi
+
+if ! expr "$1" : 'https\?://' > /dev/null; then
+  echo "$(tput setaf 1)ERROR: Invalid URI specified. -- $1$(tput sgr0)" >&2
+  echo "Try $(tput bold)getall -h$(tput sgr0) for more information." >&2
+  exit 1
+fi
+
 GetAll "$1" "$2"
