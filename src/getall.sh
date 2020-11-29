@@ -1,5 +1,7 @@
 #!/bin/sh
 
+VERSION="0.1.1"
+
 GETTER=GET
 HEADER=HEAD
 
@@ -212,5 +214,40 @@ GetAll() {
   cd "$prevcd"
   NestDecrease
 }
+
+# ヘルプの表示
+HelpMessage() {
+  echo "GetAll Version $VERSION."
+  echo "Copyright (C) 2020 KusaReMKN."
+  echo ""
+  echo "Usage: $(tput bold)getall$(tput sgr0) [Options] URL [Path]"
+  echo ""
+  echo "    URL         The URL of the page from which to get the website."
+  echo "                It MUST start with $(tput bold)http$(tput sgr0)."
+  echo "    Path        The directory to save the acquired web pages."
+  echo "                It MUST exist."
+  echo ""
+  echo "  -h, --help    Display this message and exit"
+  echo ""
+}
+
+# オプションのチェック
+while [ "$1" ]; do
+  case "$1" in
+    --help|-h)
+      HelpMessage
+      exit 0
+      ;;
+    -*)
+      echo "$(tput setaf 1)Unknown Option -- $1$(tput sgr0)" >&2
+      echo "Try $(tput bold)getall -h$(tput sgr0) for more information." >&2
+      exit 1
+      ;;
+    *)
+      break
+      ;;
+  esac
+  shift
+done
 
 GetAll "$1" "$2"
