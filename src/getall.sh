@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="0.1.1"
+VERSION="0.1.2"
 
 GETTER=GET
 HEADER=HEAD
@@ -10,7 +10,7 @@ HEADER=HEAD
 ContentTypeOf() {
   [ $# -eq 1 ] \
     && $HEADER "$1" \
-    | sed -Ene 's/^content-type:\s*(.*).*$/\1/pi' \
+    | sed -ne 's/^content-type:\s*\(.*\).*$/\1/pi' \
     | tac
 }
 
@@ -18,21 +18,21 @@ ContentTypeOf() {
 # MIMETypeOf(URI)
 MIMETypeOf() {
   echo "$(ContentTypeOf "$1")" \
-    | sed -En -e 's/^([^;]*).*$/\1/p'
+    | sed -ne 's/^\([^;]*\).*$/\1/p'
 }
 
 # / で終わるファイルには index.html を付与
 # AutoIndex([URI])
 AutoIndex() {
   echo "$1" \
-    | sed -E -e 's#(.*)/$#\1/index.html#'
+    | sed -e 's#\(.*\)/$#\1/index.html#'
 }
 
 # ベース URL を返す
 # BaseURI(File, [Default])
 BaseURI() {
   if [ -f "$1" ]; then
-    base=$(sed -Ene 's/.*<base.*href="([^"]+)".*>.*/\1/pi' "$1" | tac)
+    base=$(sed -ne 's/.*<base.*href="\([^"][^"]*\)".*>.*/\1/pi' "$1" | tac)
     if [ -n "$base" ]; then
       echo "$base"
     else
@@ -44,27 +44,27 @@ BaseURI() {
 # 完全修飾 URL からファイル名部分を取り去ったディレクトリを返す
 # DirURI([URI])
 DirURI() {
-  echo "$(echo "$1" | sed -E -e 's#([^/])/[^/]*$#\1#')/"
+  echo "$(echo "$1" | sed -e 's#\([^/]\)/[^/]*$#\1#')/"
 }
 
 # 完全修飾 URL からその親ディレクトリを指す URL を返す
 # ParentDirURI([URI])
 ParentDirURI() {
-  echo "$(DirURI "$(DirURI "$1" | sed -E -e 's#/$##')")"
+  echo "$(DirURI "$(DirURI "$1" | sed -e 's#/$##')")"
 }
 
 # 完全修飾 URL からその Root ディレクトリを指す URL を返す
 # RootDirURI([URI])
 RootDirURI() {
   echo "$1" \
-    | sed -E -e 's#^(https?://[^/]*/).*$#\1#'
+    | sed -e 's#^\(https\{0,1\}://[^/]*/\).*$#\1#'
 }
 
 # 完全修飾 URL のスキームを返す
 # SchemeOf([URI])
 SchemeOf() {
   echo "$1" \
-    | sed -E -e 's/^([^:]*):.*$/\1/'
+    | sed -e 's/^\([^:]*\):.*$/\1/'
 }
 
 # 基底 URL と部分 URL から完全修飾 URL を返す
@@ -84,7 +84,7 @@ FullURI() {
 # RemoveScheme(URI)
 RemoveScheme() {
   [ -n "$1" ] \
-    && echo "$(echo "$1" | sed -E -e 's#.*://(.*)#\1#')"
+    && echo "$(echo "$1" | sed -e 's#.*://\(.*\)#\1#')"
 }
 
 # http から始まる URI のコンテンツを保存するための適当な名前を返す
@@ -118,8 +118,8 @@ GetLinkList() {
   if [ $# -ne 2 ]; then
     return 1
   fi
-  sed -En -e 's/^.*href\s*=\s*"([^#"]*)#?.*".*$/\1/pi' \
-          -e 's/^.*src\s*=\s*"([^"]+)".*$/\1/pi' \
+  sed -n -e 's/^.*href\s*=\s*"\([^#"]*\)#\{0,1\}.*".*$/\1/pi' \
+         -e 's/^.*src\s*=\s*"\([^"]*\)".*$/\1/pi' \
       "$1" \
     | sort \
     | uniq \
@@ -144,8 +144,8 @@ ResolveLinkList() {
 # オリジンのチェック (超簡易)
 # IsSameOrigin(URI1, URI2)
 IsSameOrigin() {
-  origin1=$(echo "$1" | sed -E -e 's#(https?://[^/]*)/.*$#\1#')
-  origin2=$(echo "$2" | sed -E -e 's#(https?://[^/]*)/.*$#\1#')
+  origin1=$(echo "$1" | sed -e 's#\(https\{0,1\}://[^/]*\)/.*$#\1#')
+  origin2=$(echo "$2" | sed -e 's#\(https\{0,1\}://[^/]*\)/.*$#\1#')
   [ "$origin1" = "$origin2" ]
 }
 
