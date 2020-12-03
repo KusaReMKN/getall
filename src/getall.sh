@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="0.1.2"
+VERSION="0.1.3"
 
 GETTER=GET
 HEADER=HEAD
@@ -215,19 +215,24 @@ GetAll() {
   NestDecrease
 }
 
-# ヘルプの表示
-HelpMessage() {
+# バージョンの表示
+VersionMessage() {
   echo "GetAll Version $VERSION."
+}
+
+HelpMessage() {
+  VersionMessage
   echo "Copyright (C) 2020 KusaReMKN."
   echo ""
   echo "Usage: $(tput bold)getall$(tput sgr0) [Options] URL [Path]"
   echo ""
-  echo "    URL         The URL of the page from which to get the website."
-  echo "                It MUST start with $(tput bold)http$(tput sgr0)."
-  echo "    Path        The directory to save the acquired web pages."
-  echo "                It MUST exist."
+  echo "    URL           The URL of the page from which to get the website."
+  echo "                  It MUST start with $(tput bold)http$(tput sgr0)."
+  echo "    Path          The directory to save the acquired web pages."
+  echo "                  It MUST exist."
   echo ""
-  echo "  -h, --help    Display this message and exit"
+  echo "  -h, --help      Display this message and exit"
+  echo "  -v, --version   Display version and exit"
   echo ""
 }
 
@@ -236,6 +241,10 @@ while [ "$1" ]; do
   case "$1" in
     --help|-h)
       HelpMessage
+      exit 0
+      ;;
+    --version|-v)
+      VersionMessage
       exit 0
       ;;
     -*)
