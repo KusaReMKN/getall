@@ -119,7 +119,7 @@ GetLinkList() {
   if [ $# -ne 2 ]; then
     return 1
   fi
-  sed -e 's/\r\{0,1\}\n//g' \
+  sed -e 's/\r\{0,1\}\n/ /g' \
       -e 's/\(<.[^>]*>\)/\n\1\n/g' \
       "$1" \
     | sed -n -e 's/^.*href\s*=\s*"\([^#"]*\)#\{0,1\}.*".*$/\1/pi' \
