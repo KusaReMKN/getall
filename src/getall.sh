@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="0.1.4"
+VERSION="0.1.5"
 
 GETTER=GET
 HEADER=HEAD
@@ -119,9 +119,11 @@ GetLinkList() {
   if [ $# -ne 2 ]; then
     return 1
   fi
-  sed -n -e 's/^.*href\s*=\s*"\([^#"]*\)#\{0,1\}.*".*$/\1/pi' \
-         -e 's/^.*src\s*=\s*"\([^"]*\)".*$/\1/pi' \
+  sed -e 's/\r\{0,1\}\n//g' \
+      -e 's/\(<.[^>]*>\)/\n\1\n/g' \
       "$1" \
+    | sed -n -e 's/^.*href\s*=\s*"\([^#"]*\)#\{0,1\}.*".*$/\1/pi' \
+             -e 's/^.*src\s*=\s*"\([^"]*\)".*$/\1/pi' \
     | sort \
     | uniq \
     >> "$2"
