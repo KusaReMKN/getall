@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="0.1.3"
+VERSION="0.1.4"
 
 GETTER=GET
 HEADER=HEAD
@@ -73,6 +73,7 @@ FullURI() {
   case "$2" in
   *://*) echo "$2" ;;
     //*) echo "$(SchemeOf "$1"):$2" ;;
+    *:*) echo "$2" ;;
      /*) echo "$(FullURI "$(RootDirURI "$1")" "$(echo "$2" | cut -c 2-)")" ;;
     ./*) echo "$(FullURI "$(DirURI "$1")" "$(echo "$2" | cut -c 3-)")" ;;
    ../*) echo "$(FullURI "$(ParentDirURI "$1")" "$(echo "$2" | cut -c 4-)")" ;;
