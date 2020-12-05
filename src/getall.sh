@@ -5,6 +5,8 @@ VERSION="0.1.7"
 GETTER='curl -Lfs'
 HEADER='curl -LIfs'
 
+DEBUG=
+
 AUTO_SUFFIX=
 FORCE_SUFFIX=
 
@@ -241,13 +243,13 @@ GetAll() {
   printf "$(cat "$abslist" | wc -l) links found.\n"
   while read line; do
     if grep -q "^$line$" "$gotlist"; then
-      printf "$(tput setaf 2)ALREADY\t$(EscapePercent "$line")$(tput sgr0)\n"
+      [ "$DEBUG" ] && printf "$(tput setaf 2)ALREADY\t$(EscapePercent "$line")$(tput sgr0)"
       continue
     fi
     if IsSameOrigin "$1" "$line"; then
       GetAll "$line"
     else
-      printf "$(tput setaf 1)IGNORE\t$(EscapePercent "$line")$(tput sgr0)\n"
+      [ "$DEBUG" ] && printf "$(tput setaf 1)IGNORE\t$(EscapePercent "$line")$(tput sgr0)"
     fi
   done < "$abslist"
   rm -f "$abslist"
@@ -295,6 +297,9 @@ while [ "$1" ]; do
       ;;
     --force-suffix)
       FORCE_SUFFIX=1
+      ;;
+    --debug)
+      DEBUG=1
       ;;
     -*)
       echo "$(tput setaf 1)Unknown Option -- $1$(tput sgr0)" >&2
