@@ -1,10 +1,30 @@
 #!/bin/sh
 
-VERSION="0.1.5"
+VERSION="0.1.6"
 
 GETTER=GET
 HEADER=HEAD
 
+AUTO_SUFFIX=
+FORCE_SUFFIX=
+
+MIME_TYPES='/etc/mime.types'
+
+# MIME に対応する拡張子を返す
+# SuffixOf(MIME)
+SuffixOf() {
+  if [ -z "$1" ]; then
+    echo "unknown"
+    return
+  fi
+  suffix=$(sed -e 's/#.*$//' "$MIME_TYPES" \
+    | awk "/^$(echo $1 | sed 's#/#\\/#')/ { print \$2 }")
+  if [ -n "$suffix" ]; then
+    echo "$suffix"
+  else
+    echo "unknown"
+  fi
+}
 # Content-Type そのものの値を返す
 # ContentTypeOf(URI)
 ContentTypeOf() {
@@ -89,9 +109,20 @@ RemoveScheme() {
 }
 
 # http から始まる URI のコンテンツを保存するための適当な名前を返す
-# SaveFileName(URI)
+# SaveFileName(URI, [MIME])
 SaveFileName() {
-  echo "$(RemoveScheme "$(AutoIndex "$1")")"
+  orgname=$(RemoveScheme "$(AutoIndex "$1")")
+  if [ -n "$FORCE_SUFFIX" ]; then
+    echo "$orgname.$(SuffixOf "$2")"
+  elif [ -n "$AUTO_SUFFIX" ]; then
+    if echo "$(basename "$orgname")" | grep -v '\.' >/dev/null; then
+      echo "$orgname.$(SuffixOf "$2")"
+    else
+      echo "$orgname"
+    fi
+  else
+    echo "$orgname"
+  fi
 }
 
 # http から始まる URI のコンテンツを保存するための適当なディレクトリ名を返す
@@ -107,7 +138,7 @@ GetContent() {
     return 1
   fi
   fdir=$(SaveDirName "$1")
-  fname=$(SaveFileName "$1")
+  fname=$(SaveFileName "$1" "$(MIMETypeOf "$1")")
   mkdir -p "$fdir"
   $GETTER "$1" > "$fname"
   [ -e "$fname" ] && echo "$fname"
@@ -208,7 +239,7 @@ GetAll() {
       continue
     fi
     if IsSameOrigin "$1" "$line"; then
-      "$0" "$line"
+      GetAll "$line"
     else
       printf "$(tput setaf 1)IGNORE\t$(EscapePercent "$line")$(tput sgr0)\n"
     fi
@@ -234,6 +265,9 @@ HelpMessage() {
   echo "    Path          The directory to save the acquired web pages."
   echo "                  It MUST exist."
   echo ""
+  echo "  --auto-suffix   Add suffix to the file doesn't have suffix."
+  echo "  --force-suffix  Add suffix to *$(tput bold)ALL$(tput sgr0)* files."
+  echo ""
   echo "  -h, --help      Display this message and exit"
   echo "  -v, --version   Display version and exit"
   echo ""
@@ -249,6 +283,12 @@ while [ "$1" ]; do
     --version|-v)
       VersionMessage
       exit 0
+      ;;
+    --auto-suffix)
+      AUTO_SUFFIX=1
+      ;;
+    --force-suffix)
+      FORCE_SUFFIX=1
       ;;
     -*)
       echo "$(tput setaf 1)Unknown Option -- $1$(tput sgr0)" >&2
