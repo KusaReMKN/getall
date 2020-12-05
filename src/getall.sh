@@ -244,13 +244,13 @@ GetAll() {
   printf "$(cat "$abslist" | wc -l) links found.\n"
   while read line; do
     if grep -q "^$line$" "$gotlist"; then
-      [ "$DEBUG" ] && printf "$(tput setaf 2)ALREADY\t$(EscapePercent "$line")$(tput sgr0)"
+      [ "$DEBUG" ] && printf "$(tput setaf 2)ALREADY\t$(EscapePercent "$line")$(tput sgr0)\n"
       continue
     fi
     if IsSameOrigin "$1" "$line"; then
       GetAll "$line"
     else
-      [ "$DEBUG" ] && printf "$(tput setaf 1)IGNORE\t$(EscapePercent "$line")$(tput sgr0)"
+      [ "$DEBUG" ] && printf "$(tput setaf 1)IGNORE\t$(EscapePercent "$line")$(tput sgr0)\n"
     fi
   done < "$abslist"
   rm -f "$abslist"
