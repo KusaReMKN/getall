@@ -1,9 +1,9 @@
 #!/bin/sh
 
-VERSION="0.1.6"
+VERSION="0.1.7"
 
-GETTER=GET
-HEADER=HEAD
+GETTER='curl -Lfs'
+HEADER='curl -LIfs'
 
 AUTO_SUFFIX=
 FORCE_SUFFIX=
@@ -30,8 +30,10 @@ SuffixOf() {
 ContentTypeOf() {
   [ $# -eq 1 ] \
     && $HEADER "$1" \
+    | sed -e 's/\r$//' \
     | sed -ne 's/^content-type:\s*\(.*\).*$/\1/pi' \
-    | tac
+    | tac \
+    | head -1
 }
 
 # Content-Type の中の MIME を返す
@@ -141,7 +143,11 @@ GetContent() {
   fname=$(SaveFileName "$1" "$(MIMETypeOf "$1")")
   mkdir -p "$fdir"
   $GETTER "$1" > "$fname"
-  [ -e "$fname" ] && echo "$fname"
+  if [ $(echo $?) -ne 0 ]; then
+    rm "$fname"
+    return 1
+  fi
+  echo "$fname"
 }
 
 # HTML ファイルの中からリンクを抽出する
