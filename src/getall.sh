@@ -219,7 +219,7 @@ GetAll() {
   prevcd=$(pwd)
   NestIncrease
   [ -n "$2" ] && cd "$2"
-  printf "REQUEST\t$(EscapePercent "$1") ... "
+  printf "[$nestcount]\t$(EscapePercent "$1") ... "
   gotfile=$(GetContent "$1")
   if [ "$(echo $?)" -ne 0 ]; then
     echo "$(tput setaf 1)Error.$(tput sgr0)"
@@ -229,8 +229,9 @@ GetAll() {
   fi
   echo "$1" >> "$gotlist"
   printf "Done.  "
-  if [ "$(MIMETypeOf "$1")" != "text/html" ]; then
-    echo "Not HTML.  Skip."
+  mimetype=$(MIMETypeOf "$1")
+  if [ "$mimetype" != "text/html" ]; then
+    echo "Not HTML ($mimetype).  Skip."
     cd "$prevcd"
     NestDecrease
     return 0
