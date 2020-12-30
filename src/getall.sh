@@ -7,7 +7,7 @@ HEADER='curl -LIfs'
 
 DEBUG=
 
-AUTO_SUFFIX=
+AUTO_SUFFIX=1
 FORCE_SUFFIX=
 
 MIME_TYPES='/etc/mime.types'
@@ -274,8 +274,9 @@ HelpMessage() {
   echo "    Path          The directory to save the acquired web pages."
   echo "                  It MUST exist."
   echo ""
-  echo "  --auto-suffix   Add suffix to the file doesn't have suffix."
-  echo "  --force-suffix  Add suffix to *$(tput bold)ALL$(tput sgr0)* files."
+  echo "  --no-auto-suffix   Don't Add suffix to the file doesn't have suffix."
+  echo "  --auto-suffix      Add suffix to the file doesn't have suffix."
+  echo "  --force-suffix     Add suffix to *$(tput bold)ALL$(tput sgr0)* files."
   echo ""
   echo "  -h, --help      Display this message and exit"
   echo "  -v, --version   Display version and exit"
@@ -292,6 +293,9 @@ while [ "$1" ]; do
     --version|-v)
       VersionMessage
       exit 0
+      ;;
+    --no-auto-suffix)
+      AUTO_SUFFIX=
       ;;
     --auto-suffix)
       AUTO_SUFFIX=1
